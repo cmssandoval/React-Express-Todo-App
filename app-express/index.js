@@ -1,5 +1,6 @@
 // Imports
 import express from 'express';
+import fs from 'fs/promises';
 
 // Settings
 const app = express();
@@ -30,9 +31,7 @@ app.get('/todos/:id', ( req, res ) => {
     const id    = Number(req.params.id);
     const todo  = todos.find( todo => todo.id === id );
 
-    if( !todo ) {
-        res.status(404).json({ message: "Todo not found" });
-    }
+    if( !todo ) res.status(404).json({ message: "Todo not found" });
     res.json( todo );
 });
 
@@ -48,4 +47,21 @@ app.post('/todos', ( req,res ) => {
 
     todos.push(newTodo);
     res.status(201).json(newTodo);
+});
+
+// PUT routes
+app.put('/todos/:id', async ( req, res ) => {
+    const id = Number(req.params.id);
+    
+    //! CREATE getTodos function and refactorize
+    //* todos will be readed from a json file. Delete test array.
+    const todos = await getTodos(); 
+    const todo = todos.find( todo => todo.id === id);
+
+    if( !todo ) res.status(404).json({ message: "Todo not found" });
+
+    const updatedTodos = todos.filter( todo => todo.id !== id );
+
+    await fs.writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4));
+    res.json(updatedTodos);
 });
