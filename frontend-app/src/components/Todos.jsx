@@ -1,9 +1,26 @@
-import React from 'react'
+import Todo from "./Todo";
 
-const Todos = () => {
-  return (
-    <div>Todos</div>
-  )
-}
+const Todos = ({ todos, removeTodo, updateTodo }) => {
 
-export default Todos
+    return (
+        <ul className="list-group">
+            {todos.map((todo) => (
+                <Todo
+                    key={todo.id}
+                    todo={todo}
+                    removeTodo={removeTodo}
+                    updateTodo={updateTodo}
+                />
+            ))}
+            {todos.length === 0 && (
+                <li className="list-group-item">
+                    <div className="d-flex">
+                        <h5>No todos found</h5>
+                    </div>
+                </li>
+            )}
+        </ul>
+    );
+};
+
+export default Todos;
