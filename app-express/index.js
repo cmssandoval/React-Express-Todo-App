@@ -11,7 +11,7 @@ app.use(express.json());
 // Server listening inicilization
 app.listen( port, () => {
     console.log(`¡Server is on! Listening on port ${ port }`);
-    console.log(`Go to http://localhost:${ port }`);
+    console.log(`Go to http://localhost:${ port }/`);
 });
 
 // Data
@@ -22,6 +22,10 @@ const todos = [
 ];
 
 // GET routes
+app.get('/todos', ( req, res ) => {
+    res.json( todos );
+});
+
 app.get('/todos/:id', ( req, res ) => {
     const id    = Number(req.params.id);
     const todo  = todos.find( todo => todo.id === id );
@@ -33,3 +37,15 @@ app.get('/todos/:id', ( req, res ) => {
 });
 
 // POST routes
+app.post('/todos', ( req,res ) => {
+    const { title } = req.body;
+
+    const newTodo = {
+        id: crypto.randomUUID(),
+        title,
+        done: false,
+    };
+
+    todos.push(newTodo);
+    res.status(201).json(newTodo);
+});
