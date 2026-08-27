@@ -1,12 +1,35 @@
+// Imports
 import express from 'express';
+
+// Settings
 const app = express();
 const port = 5000;
 
-app.listen(port, () => {
-    console.log(`¡Servidor encendido! Escuchando el puerto ${port}`);
-    console.log(`Ir a http://localhost:${port}`);
+// Middleware calls
+app.use(express.json());
+
+// Server listening inicilization
+app.listen( port, () => {
+    console.log(`¡Server is on! Listening on port ${ port }`);
+    console.log(`Go to http://localhost:${ port }`);
 });
 
-app.get('/', (req,res) => {
-    res.json({message: "Hello World!"});
+// Data
+const todos = [
+    { id: 1, title: "Todo 1", done: false },
+    { id: 2, title: "Todo 2", done: false },
+    { id: 3, title: "Todo 3", done: false },
+];
+
+// GET routes
+app.get('/todos/:id', ( req, res ) => {
+    const id    = Number(req.params.id);
+    const todo  = todos.find( todo => todo.id === id );
+
+    if( !todo ) {
+        res.status(404).json({ message: "Todo not found" });
+    }
+    res.json( todo );
 });
+
+// POST routes
