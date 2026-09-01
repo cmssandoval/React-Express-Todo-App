@@ -3,15 +3,17 @@ import express from 'express';
 import { writeFile, readFile } from 'fs/promises';
 import cors from 'cors';
 
-// Settings
+import { todoModel } from './models/todo.model.js';
+
+//* Settings
 const app = express();
 const port = 5000;
 
-// Middleware calls
+//* Middleware calls
 app.use(express.json());
 app.use(cors());
 
-// Server listening initilization
+//* Server listening initilization
 app.listen( port, () => {
     console.log(`¡Server is on! Listening on port ${ port }`);
     console.log(`Go to http://localhost:${ port }/`);
@@ -26,8 +28,14 @@ const getTodos = async () => {
 
 // GET ROUTES
 app.get('/todos', async ( req, res ) => {
-    const todos = await getTodos();
-    res.json( todos );
+    // const todos = await getTodos();
+    // res.json( todos );
+    try {
+        const todos = await todoModel.findAll();
+        return res.json( todos );
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 app.get('/todos/:id', async ( req, res ) => {
