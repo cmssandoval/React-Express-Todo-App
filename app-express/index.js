@@ -31,7 +31,7 @@ app.get('/todos', async ( req, res ) => {
     // const todos = await getTodos();
     // res.json( todos );
     try {
-        const todos = await todoModel.findAll();
+        const todos = await todoModel.findAllTodos();
         return res.json( todos );
     } catch (error) {
         return res.status(500).json({ message: "Internal server error" });
@@ -39,13 +39,18 @@ app.get('/todos', async ( req, res ) => {
 });
 
 app.get('/todos/:id', async ( req, res ) => {
-    const id    = req.params.id;
+    const { id } = req.params;
     
-    const todos = await getTodos();
-    const todo  = todos.find( todo => todo.id === id );
-
-    if( !todo ) res.status(404).json({ message: 'Todo not found' });
-    res.json( todo );
+    // const todos = await getTodos();
+    // const todo  = todos.find( todo => todo.id === id );
+    try {
+        const todo = await todoModel.findTodoById( id );
+        if( !todo ) return res.status(404).json({ message: 'Todo not found' });
+        res.json( todo );
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
 });
 
 // POST METHOD
