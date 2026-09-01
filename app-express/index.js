@@ -34,7 +34,7 @@ app.get('/todos', async ( req, res ) => {
         const todos = await todoModel.findAllTodos();
         return res.json( todos );
     } catch (error) {
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
 
@@ -49,7 +49,7 @@ app.get('/todos/:id', async ( req, res ) => {
         res.json( todo );
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
 
@@ -57,18 +57,26 @@ app.get('/todos/:id', async ( req, res ) => {
 app.post('/todos', async ( req,res ) => {
     const { title } = req.body;
 
+    if ( !title ) return res.status(400).json({ message: 'Title is required' });
+
     const newTodo = {
-        id: crypto.randomUUID(),
+        // id: crypto.randomUUID(),
         title,
         done: false,
     };
 
-    const todos = await getTodos();
-    todos.push( newTodo );
+    try {
+        const todo = await todoModel.addTodo( newTodo );
+        return res.status(201).json( todo );
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
 
-    await writeFile('./todos.json', JSON.stringify( todos, null, 4 ));
-
-    res.status(201).json( newTodo );
+    // const todos = await getTodos();
+    // todos.push( newTodo );
+    // await writeFile('./todos.json', JSON.stringify( todos, null, 4 ));
+    // res.status(201).json( newTodo );
 });
 
 // PUT METHOD

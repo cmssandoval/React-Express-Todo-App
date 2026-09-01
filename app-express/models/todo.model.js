@@ -1,7 +1,7 @@
 import { pool } from '../database/connection.js';
 
 /**
- * Finds all todos from todos table.
+ * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
 const findAllTodos = async () => {
@@ -20,7 +20,19 @@ const findTodoById = async ( id ) => {
     return rows;
 };
 
+/**
+ * Adds a todo to the todos table.
+ * @param {Object} todo Todo object, with title and done properties.
+ * @returns {Promise<Object>} Todo object.
+ */
+const addTodo = async ( todo ) => {
+    const query = 'INSERT INTO todos (title, done) VALUES ($1, $2) RETURNING *';
+    const { rows } = await pool.query(query, [todo.title, todo.done]);
+    return rows[0];
+};
+
 export const todoModel = {
     findAllTodos,
     findTodoById,
+    addTodo,
 };
