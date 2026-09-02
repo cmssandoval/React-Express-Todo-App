@@ -1,12 +1,9 @@
 import postgres from 'pg';
+import 'dotenv/config';
+
 const { Pool } = postgres;
 
 export const pool = new Pool({
-    host: 'localhost',
-    port: 5432,
-    database: 'postgres',
-    user: 'postgres',
-    password: 'postgres',
     allowExitOnIdle: true,
 });
 

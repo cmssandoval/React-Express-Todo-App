@@ -2,21 +2,22 @@
 import express from 'express';
 import { writeFile, readFile } from 'fs/promises';
 import cors from 'cors';
+import 'dotenv/config';
 
 import { todoModel } from './models/todo.model.js';
 
 //* Settings
 const app = express();
-const port = 5000;
+const PORT = process.env.PORT || 5000;
 
 //* Middleware calls
 app.use(express.json());
 app.use(cors());
 
 //* Server listening initilization
-app.listen( port, () => {
-    console.log(`¡Server is on! Listening on port ${ port }`);
-    console.log(`Go to http://localhost:${ port }/`);
+app.listen( PORT, () => {
+    console.log(`¡Server is on! Listening on port ${ PORT }`);
+    console.log(`Go to http://localhost:${ PORT }/`);
 });
 
 // Read and parse array of todos from todos.json

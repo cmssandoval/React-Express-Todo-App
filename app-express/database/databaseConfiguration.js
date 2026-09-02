@@ -6,22 +6,17 @@
 */
 
 import { Client } from 'pg';
+import 'dotenv/config';
 
 /**
  * Main function. It sets configuration, 
  * connects and disconnects from the database,
  * and runs utility functions.
- * @returns {String} Console log of the client connection being clossed.
+ * @returns {Promise<String>} Console log of the client connection being clossed.
  */
 async function connectToPostgresDefault () {
     // Default database connection configuration
-    const client = new Client({
-        host: 'localhost',
-        user: 'postgres',
-        password: 'postgres',
-        port: 5432,
-        database: 'postgres',
-    });
+    const client = new Client({});
 
     // Database connection
     await client.connect();
@@ -43,7 +38,7 @@ connectToPostgresDefault();
  * Creates a database.
  * @param {Client} client Client instance.
  * @param {String} databaseName Database name.
- * @returns {Void}
+ * @returns {Promise<Void>}
  */
 const createDatabase = async ( client, databaseName) => {
 
@@ -66,7 +61,7 @@ const createDatabase = async ( client, databaseName) => {
  * Creates a new table.
  * @param {Client} client Client instance.
  * @param {String} tableName Table name.
- * @returns {String} Console log of the table creation response.
+ * @returns {Promise<String>} Console log of the table creation response.
  */
 const createNewTable = async ( client, tableName ) => {
 
@@ -87,7 +82,7 @@ const createNewTable = async ( client, tableName ) => {
  * Selects all rows of a table.
  * @param {Client} client Client instance.
  * @param {String} tableName Table name.
- * @returns {String} Console log of the rows selected.
+ * @returns {Promise<String>} Console log of the rows selected.
  */
 const selectAllFromTable = async ( client, tablename ) => {
     const { rows: response } = await client.query(`SELECT * FROM ${tablename}`)
