@@ -5,16 +5,16 @@ import Todos from "./components/Todos.jsx";
 
 const App = () => {
     /**
-     * Base URL used to fetch data and send http requests.
+     * URL used to fetch data and send http requests.
      */
-    const baseURL = 'http://localhost:5000';
+    const backendURL = `http://localhost:${ import.meta.env.VITE_BACKEND_PORT }`;
     
     const [ todos, setTodos ] = useState([]);
 
     useEffect(() => {
         const getTodos = async () => {
             try {
-                const response = await fetch(`${baseURL}/todos`);
+                const response = await fetch(`${backendURL}/todos`);
                 const todos = await response.json();
                 setTodos(todos);
             } catch (error) {
@@ -31,7 +31,7 @@ const App = () => {
      * @param {String} title description of the todo.
      */
     const addTodo = async ( title ) => {
-        const response = await fetch(`${baseURL}/todos`, {
+        const response = await fetch(`${backendURL}/todos`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ title })
@@ -45,7 +45,7 @@ const App = () => {
      * @param {String} id id of the todo.
      */
     const removeTodo = async ( id ) => {
-        const response = await fetch(`${baseURL}/todos/${id}` ,{
+        const response = await fetch(`${backendURL}/todos/${id}` ,{
             method: "DELETE",
         });
         if ( response.status !== 200 ) return alert("Something went wrong");
@@ -57,7 +57,7 @@ const App = () => {
      * @param {String} id id of the todo.
      */
     const updateTodo = async ( id ) => {
-        const response = await fetch(`${baseURL}/todos/${id}`, {
+        const response = await fetch(`${backendURL}/todos/${id}`, {
             method: "PUT",
         });
         if ( response.status !== 200 ) return alert("Something went wrong");
