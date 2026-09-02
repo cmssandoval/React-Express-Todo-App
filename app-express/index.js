@@ -92,20 +92,32 @@ app.post('/todos', async ( req,res ) => {
 
 // PUT METHOD
 app.put('/todos/:id', async ( req, res ) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    const todos = await getTodos(); 
-    const todo = todos.find( todo => todo.id === id );
+    try {
 
-    if( !todo ) res.status(404).json({ message: 'Todo not found' });
+        const todo = await todoModel.updateTodoDoneById( id );
+        if( !todo ) return res.status(404).json({ message: 'Todo not found' });
 
-    const updatedTodos = todos.map( todo => {
-        if ( todo.id === id ) return { ...todo, done: !todo.done };
-        return todo;
-    });
+        return res.status(200).json({ message: 'Todo updated successfully', todo, });
 
-    await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
-    res.json( updatedTodos );
+    } catch (error) {
+        
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    // const todos = await getTodos(); 
+    // const todo = todos.find( todo => todo.id === id );
+
+
+    // const updatedTodos = todos.map( todo => {
+    //     if ( todo.id === id ) return { ...todo, done: !todo.done };
+    //     return todo;
+    // });
+
+    // await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
+    // res.json( updatedTodos );
 });
 
 // DELETE METHOD

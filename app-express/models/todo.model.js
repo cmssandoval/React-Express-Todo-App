@@ -23,7 +23,7 @@ const findTodoById = async ( id ) => {
 /**
  * Adds a todo to the todos table.
  * @param {Object} todo Todo object, with title and done properties.
- * @returns {Promise<Object>} Todo object.
+ * @returns {Promise<Object>} Added todo.
  */
 const addTodo = async ( todo ) => {
     const query = 'INSERT INTO todos (title, done) VALUES ($1, $2) RETURNING *';
@@ -31,16 +31,32 @@ const addTodo = async ( todo ) => {
     return rows[0];
 };
 
-
+/**
+ * Removes a todo from the todos table by the todo id.
+ * @param {String} id Todo id.
+ * @returns {Promise<Object>} Deleted todo.
+ */
 const removeTodoById = async ( id ) => {
     const query = 'DELETE FROM todos WHERE id = $1 RETURNING *';
     const { rows } = await pool.query( query, [id] );
     return rows[0];
 };
 
+/**
+ * Updates the "done" boolean property of a todo from the todos table by the todo id.
+ * @param {String} id Todo id.
+ * @returns {Promise<Object>} Updated todo.
+ */
+const updateTodoDoneById = async ( id ) => {
+    const query = 'UPDATE todos SET done = NOT done WHERE id = $1 RETURNING *';
+    const { rows } = await pool.query( query, [id] );
+    return rows[0];
+}
+
 export const todoModel = {
     findAllTodos,
     findTodoById,
     addTodo,
     removeTodoById,
+    updateTodoDoneById,
 };
