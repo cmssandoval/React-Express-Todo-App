@@ -1,6 +1,5 @@
 // Imports
 import express from 'express';
-import { writeFile, readFile } from 'fs/promises';
 import cors from 'cors';
 import 'dotenv/config';
 
@@ -20,17 +19,8 @@ app.listen( PORT, () => {
     console.log(`Go to http://localhost:${ PORT }/`);
 });
 
-// Read and parse array of todos from todos.json
-const getTodos = async () => {
-    const fsResponse = await readFile('./todos.json', 'utf-8');
-    const todos = JSON.parse( fsResponse )
-    return todos;
-};
-
 // GET ROUTES
 app.get('/todos', async ( req, res ) => {
-    // const todos = await getTodos();
-    // res.json( todos );
     try {
         const todos = await todoModel.findAllTodos();
         return res.json( todos );
@@ -45,8 +35,6 @@ app.get('/todos', async ( req, res ) => {
 app.get('/todos/:id', async ( req, res ) => {
     const { id } = req.params;
     
-    // const todos = await getTodos();
-    // const todo  = todos.find( todo => todo.id === id );
     try {
 
         const todo = await todoModel.findTodoById( id );
@@ -68,7 +56,6 @@ app.post('/todos', async ( req,res ) => {
     if ( !title ) return res.status(400).json({ message: 'Title is required' });
 
     const newTodo = {
-        // id: crypto.randomUUID(),
         title,
         done: false,
     };
@@ -85,10 +72,6 @@ app.post('/todos', async ( req,res ) => {
 
     }
 
-    // const todos = await getTodos();
-    // todos.push( newTodo );
-    // await writeFile('./todos.json', JSON.stringify( todos, null, 4 ));
-    // res.status(201).json( newTodo );
 });
 
 // PUT METHOD
@@ -108,17 +91,6 @@ app.put('/todos/:id', async ( req, res ) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 
-    // const todos = await getTodos(); 
-    // const todo = todos.find( todo => todo.id === id );
-
-
-    // const updatedTodos = todos.map( todo => {
-    //     if ( todo.id === id ) return { ...todo, done: !todo.done };
-    //     return todo;
-    // });
-
-    // await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
-    // res.json( updatedTodos );
 });
 
 // DELETE METHOD
@@ -139,11 +111,4 @@ app.delete('/todos/:id', async ( req, res ) => {
 
     }
 
-    // const todos = await getTodos();
-    // const todo = todos.find( todo => todo.id === id );
-
-    // const updatedTodos = todos.filter( todo => todo.id !== id );
-
-    // await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
-    // res.json( updatedTodos );
 });
