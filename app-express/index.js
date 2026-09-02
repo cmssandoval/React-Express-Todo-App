@@ -34,7 +34,10 @@ app.get('/todos', async ( req, res ) => {
         const todos = await todoModel.findAllTodos();
         return res.json( todos );
     } catch (error) {
+
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
+
     }
 });
 
@@ -44,12 +47,16 @@ app.get('/todos/:id', async ( req, res ) => {
     // const todos = await getTodos();
     // const todo  = todos.find( todo => todo.id === id );
     try {
+
         const todo = await todoModel.findTodoById( id );
         if( !todo ) return res.status(404).json({ message: 'Todo not found' });
         res.json( todo );
+
     } catch (error) {
+
         console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
+
     }
 });
 
@@ -66,11 +73,15 @@ app.post('/todos', async ( req,res ) => {
     };
 
     try {
+
         const todo = await todoModel.addTodo( newTodo );
         return res.status(201).json( todo );
+
     } catch (error) {
+
         console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
+
     }
 
     // const todos = await getTodos();
@@ -99,15 +110,27 @@ app.put('/todos/:id', async ( req, res ) => {
 
 // DELETE METHOD
 app.delete('/todos/:id', async ( req, res ) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    const todos = await getTodos();
-    const todo = todos.find( todo => todo.id === id );
+    try {
 
-    if ( !todo ) res.status(404).json({ message: 'Todo not found' });
+        const todo = await todoModel.removeTodoById( id );
+        if ( !todo ) return res.status(404).json({ message: 'Todo not found' });
 
-    const updatedTodos = todos.filter( todo => todo.id !== id );
+        return res.status(200).json({ message: 'Todo deleted successfully', todo, });
 
-    await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
-    res.json( updatedTodos );
+    } catch (error) {
+
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+
+    }
+
+    // const todos = await getTodos();
+    // const todo = todos.find( todo => todo.id === id );
+
+    // const updatedTodos = todos.filter( todo => todo.id !== id );
+
+    // await writeFile('./todos.json', JSON.stringify( updatedTodos, null, 4 ));
+    // res.json( updatedTodos );
 });

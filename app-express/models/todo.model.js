@@ -16,7 +16,7 @@ const findAllTodos = async () => {
  */
 const findTodoById = async ( id ) => {
     const query = 'SELECT * FROM todos WHERE id = $1';
-    const { rows } = await pool.query(query, [id]);
+    const { rows } = await pool.query( query, [id] );
     return rows;
 };
 
@@ -27,7 +27,14 @@ const findTodoById = async ( id ) => {
  */
 const addTodo = async ( todo ) => {
     const query = 'INSERT INTO todos (title, done) VALUES ($1, $2) RETURNING *';
-    const { rows } = await pool.query(query, [todo.title, todo.done]);
+    const { rows } = await pool.query( query, [todo.title, todo.done] );
+    return rows[0];
+};
+
+
+const removeTodoById = async ( id ) => {
+    const query = 'DELETE FROM todos WHERE id = $1 RETURNING *';
+    const { rows } = await pool.query( query, [id] );
     return rows[0];
 };
 
@@ -35,4 +42,5 @@ export const todoModel = {
     findAllTodos,
     findTodoById,
     addTodo,
+    removeTodoById,
 };
