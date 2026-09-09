@@ -1,4 +1,7 @@
 import { todoModel } from "../models/todo.model.js";
+import { getDatabaseError } from "../lib/errors/database.error.js";
+//! Implement modular error handling.
+//* Research about express-valdiator, validator.js, and joi libs.
 
 const read = async ( req, res ) => {
     try {
