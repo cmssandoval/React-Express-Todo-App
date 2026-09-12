@@ -4,11 +4,23 @@ import { getDatabaseError } from "../lib/errors/database.error.js";
 //* Research about express-valdiator, validator.js, and joi libs.
 
 const read = async ( req, res ) => {
-    try {
-        const { limit = 5, order ="ASC" } = req.query;
-        
-        const todos = await todoModel.findAllTodos({ limit, order });
+    const { limit = 5, order ="ASC", page = 1 } = req.query;
+
+    //* Alternative validation method.
+    // const isPageValid = Number.isInteger(Number(page)) && Number(page) > 0;
+    const isPageValid = /^[1-9]\d*$/.test(page);
+
+    if (!isPageValid) {
+        return res.status(400).json({
+            message: "Invalid page number, number > 0"
+        });
+    }
+
+    try {        
+
+        const todos = await todoModel.findAllTodos({ limit, order, page });
         return res.json( todos );
+
     } catch (error) {
         console.log(error);
 

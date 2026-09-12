@@ -5,9 +5,15 @@ import { pool } from '../database/connection.js';
  * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
-const findAllTodos = async ({ limit = 5, order = "ASC" }) => {
-    const query = "SELECT * FROM todos ORDER BY done %s LIMIT %s";
-    const formattedQuery = format( query, order, limit );
+const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
+    const query =
+    `SELECT * FROM todos
+    ORDER BY done %s
+    LIMIT %s
+    OFFSET %s
+    `;
+    const offset = ( page - 1 ) * limit;
+    const formattedQuery = format( query, order, limit, offset );
     const { rows } = await pool.query( formattedQuery );
     return rows;
 };
