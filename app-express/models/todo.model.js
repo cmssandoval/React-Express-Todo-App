@@ -4,8 +4,9 @@ import { pool } from '../database/connection.js';
  * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
-const findAllTodos = async () => {
-    const { rows } = await pool.query("SELECT * FROM todos");
+const findAllTodos = async ({ limit = 5 }) => {
+    const query = "SELECT * FROM todos LIMIT $1"
+    const { rows } = await pool.query(query, [limit]);
     return rows;
 };
 
