@@ -10,8 +10,13 @@ const read = async ( req, res ) => {
         const todos = await todoModel.findAllTodos({ limit });
         return res.json( todos );
     } catch (error) {
-
         console.log(error);
+
+        if (error.code) {
+            const { code, message } = getDatabaseError(error.code);
+            return res.status(code).json({ message });
+        }
+
         return res.status(500).json({ message: 'Internal server error' });
 
     }
@@ -27,8 +32,13 @@ const readById = async ( req, res ) => {
         res.json( todo );
 
     } catch (error) {
-
         console.log(error);
+                
+        if (error.code) {
+            const { code, message } = getDatabaseError(error.code);
+            return res.status(code).json({ message });
+        }
+
         return res.status(500).json({ message: 'Internal server error' });
 
     }
@@ -37,7 +47,7 @@ const readById = async ( req, res ) => {
 const create = async ( req, res ) => {
     const { title } = req.body;
 
-    if ( !title ) return res.status(400).json({ message: 'Title is required' });
+    // if ( !title ) return res.status(400).json({ message: 'Title is required' });
 
     const newTodo = {
         title,
@@ -50,8 +60,13 @@ const create = async ( req, res ) => {
         return res.status(201).json( todo );
 
     } catch (error) {
-
         console.log(error);
+        
+        if (error.code) {
+            const { code, message } = getDatabaseError(error.code);
+            return res.status(code).json({ message });
+        }
+
         return res.status(500).json({ message: 'Internal server error' });
 
     }
@@ -68,8 +83,13 @@ const update = async ( req, res ) => {
         return res.status(200).json({ message: 'Todo updated successfully', todo, });
 
     } catch (error) {
-        
         console.log(error);
+                
+        if (error.code) {
+            const { code, message } = getDatabaseError(error.code);
+            return res.status(code).json({ message });
+        }
+
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -85,8 +105,13 @@ const remove = async ( req, res ) => {
         return res.status(200).json({ message: 'Todo deleted successfully', todo, });
 
     } catch (error) {
-
         console.log(error);
+        
+        if (error.code) {
+            const { code, message } = getDatabaseError(error.code);
+            return res.status(code).json({ message });
+        }
+
         return res.status(500).json({ message: 'Internal server error' });
 
     }
