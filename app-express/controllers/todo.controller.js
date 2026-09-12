@@ -5,9 +5,9 @@ import { getDatabaseError } from "../lib/errors/database.error.js";
 
 const read = async ( req, res ) => {
     try {
-        const { limit = 5 } = req.query;
+        const { limit = 5, order ="ASC" } = req.query;
         
-        const todos = await todoModel.findAllTodos({ limit });
+        const todos = await todoModel.findAllTodos({ limit, order });
         return res.json( todos );
     } catch (error) {
         console.log(error);

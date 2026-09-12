@@ -1,12 +1,14 @@
+import format from 'pg-format';
 import { pool } from '../database/connection.js';
 
 /**
  * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
-const findAllTodos = async ({ limit = 5 }) => {
-    const query = "SELECT * FROM todos LIMIT $1"
-    const { rows } = await pool.query(query, [limit]);
+const findAllTodos = async ({ limit = 5, order = "ASC" }) => {
+    const query = "SELECT * FROM todos ORDER BY done %s LIMIT %s";
+    const formattedQuery = format( query, order, limit );
+    const { rows } = await pool.query( formattedQuery );
     return rows;
 };
 
