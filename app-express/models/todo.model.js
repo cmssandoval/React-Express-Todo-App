@@ -21,7 +21,7 @@ const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
     
     const query =
     `SELECT * FROM todos
-    ORDER BY done %s, id ASC
+    ORDER BY done %s, id DESC
     LIMIT %s
     OFFSET %s
     `;
