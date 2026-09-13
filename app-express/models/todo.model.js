@@ -1,21 +1,61 @@
+import 'dotenv/config';
 import format from 'pg-format';
 import { pool } from '../database/connection.js';
+
+const BASE_URL =
+    process.env.NODE_ENV === "production"
+        ? process.env.DOMAIN_URL_APP
+        : `http://localhost:${process.env.PORT}`;
 
 /**
  * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
 const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
+
+    const countQuery = 'SELECT COUNT(*) FROM todos';
+    const { rows: countResult } = await pool.query( countQuery );
+    const total_rows = parseInt( countResult[0].count, 10 );
+
+    const total_pages = Math.ceil(total_rows / limit);
+    
     const query =
     `SELECT * FROM todos
-    ORDER BY done %s
+    ORDER BY done %s, id ASC
     LIMIT %s
     OFFSET %s
     `;
+    const orderList = ["ASC", "DESC"];
+    const safeOrder =
+        orderList.includes(order.toUpperCase())
+            ? order.toUpperCase()
+            : "ASC";
+        
     const offset = ( page - 1 ) * limit;
-    const formattedQuery = format( query, order, limit, offset );
+    const formattedQuery = format( query, safeOrder, limit, offset );
     const { rows } = await pool.query( formattedQuery );
-    return rows;
+
+    const results = rows.map(( row ) => {
+        return {
+            ...row,
+            href: `${BASE_URL}/todos/${row.id}`,
+        };
+    });
+
+    return {
+        results,
+        total_pages,
+        page,
+        limit,
+        next:
+            (total_pages <= parseInt(page, 10))
+                ? null
+                : `${BASE_URL}/todos?limit=${limit}&page=${parseInt(page, 10) + 1}`,
+        previous:
+            (page <= 1)
+                ? null
+                : `${BASE_URL}/todos?limit=${limit}&page=${parseInt(page, 10) - 1}`
+    };
 };
 
 /**
