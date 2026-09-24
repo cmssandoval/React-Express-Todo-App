@@ -7,6 +7,10 @@ const databaseError = {
         code: 400,
         message: "Bad request",
     },
+    23505: {
+        code: 400,
+        message: "User already exists",
+    },
 };
 
 export const getDatabaseError = (code) => {
