@@ -6,8 +6,6 @@ import { getDatabaseError } from "../lib/errors/database.error.js";
 const read = async ( req, res ) => {
     const { limit = 5, order ="ASC", page = 1 } = req.query;
 
-    //* Alternative validation method.
-    // const isPageValid = Number.isInteger(Number(page)) && Number(page) > 0;
     const isPageValid = /^[1-9]\d*$/.test(page);
 
     if (!isPageValid) {
@@ -18,7 +16,7 @@ const read = async ( req, res ) => {
 
     try {        
 
-        const todos = await todoModel.findAllTodos({ limit, order, page });
+        const todos = await todoModel.findAllTodos({ limit, order, page, user: req.user });
         return res.json( todos );
 
     } catch (error) {
@@ -39,9 +37,10 @@ const readById = async ( req, res ) => {
     
     try {
 
-        const todo = await todoModel.findTodoById( id );
+        const todo = await todoModel.findTodoById( id, req.user );
         if( !todo ) return res.status(404).json({ message: 'Todo not found' });
-        res.json( todo );
+
+        return res.json( todo );
 
     } catch (error) {
         console.log(error);
@@ -59,7 +58,7 @@ const readById = async ( req, res ) => {
 const create = async ( req, res ) => {
     const { title } = req.body;
 
-    // if ( !title ) return res.status(400).json({ message: 'Title is required' });
+    if ( !title ) return res.status(400).json({ message: 'Title is required' });
 
     const newTodo = {
         title,
@@ -68,7 +67,7 @@ const create = async ( req, res ) => {
 
     try {
 
-        const todo = await todoModel.addTodo( newTodo );
+        const todo = await todoModel.addTodo( newTodo, req.user );
         return res.status(201).json( todo );
 
     } catch (error) {
@@ -89,7 +88,7 @@ const update = async ( req, res ) => {
 
     try {
 
-        const todo = await todoModel.updateTodoDoneById( id );
+        const todo = await todoModel.updateTodoDoneById( id, req.user );
         if( !todo ) return res.status(404).json({ message: 'Todo not found' });
 
         return res.status(200).json({ message: 'Todo updated successfully', todo, });
@@ -111,7 +110,7 @@ const remove = async ( req, res ) => {
 
     try {
 
-        const todo = await todoModel.removeTodoById( id );
+        const todo = await todoModel.removeTodoById( id, req.user );
         if ( !todo ) return res.status(404).json({ message: 'Todo not found' });
 
         return res.status(200).json({ message: 'Todo deleted successfully', todo, });

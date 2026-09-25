@@ -41,7 +41,7 @@ const validateUser = async ({ email, password }) => {
         if ( !isMatch ) {
             throw { message: "Invalid credentials" };
         }
-        return true;
+        return user;
         
     } catch ( error ) {
 

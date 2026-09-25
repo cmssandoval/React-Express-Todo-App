@@ -11,16 +11,17 @@ const BASE_URL =
  * Finds all todos from the todos table.
  * @returns {Promise<Array<Object>>} Query response rows (todos).
  */
-const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
+const findAllTodos = async ({ limit = 5, order = "ASC", page = 1, user }) => {
 
-    const countQuery = 'SELECT COUNT(*) FROM todos';
-    const { rows: countResult } = await pool.query( countQuery );
+    const countQuery = 'SELECT COUNT(*) FROM todos WHERE user_id = $1';
+    const { rows: countResult } = await pool.query( countQuery, [user.user_id] );
     const total_rows = parseInt( countResult[0].count, 10 );
 
     const total_pages = Math.ceil(total_rows / limit);
     
     const query =
     `SELECT * FROM todos
+    WHERE user_id = %s
     ORDER BY done %s, id DESC
     LIMIT %s
     OFFSET %s
@@ -32,7 +33,7 @@ const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
             : "ASC";
         
     const offset = ( page - 1 ) * limit;
-    const formattedQuery = format( query, safeOrder, limit, offset );
+    const formattedQuery = format( query, user.user_id, safeOrder, limit, offset );
     const { rows } = await pool.query( formattedQuery );
 
     const results = rows.map(( row ) => {
@@ -63,10 +64,10 @@ const findAllTodos = async ({ limit = 5, order = "ASC", page = 1 }) => {
  * @param {String} id Todo id.
  * @returns {Promise<Array<Object>>} Query response rows (todo).
  */
-const findTodoById = async ( id ) => {
-    const query = 'SELECT * FROM todos WHERE id = $1';
-    const { rows } = await pool.query( query, [id] );
-    return rows;
+const findTodoById = async ( id, user ) => {
+    const query = 'SELECT * FROM todos WHERE id = $1 AND user_id = $2';
+    const { rows } = await pool.query( query, [id, user.user_id] );
+    return rows[0];
 };
 
 /**
@@ -74,9 +75,9 @@ const findTodoById = async ( id ) => {
  * @param {Object} todo Todo object, with title and done properties.
  * @returns {Promise<Object>} Added todo.
  */
-const addTodo = async ( todo ) => {
-    const query = 'INSERT INTO todos (title, done) VALUES ($1, $2) RETURNING *';
-    const { rows } = await pool.query( query, [todo.title, todo.done] );
+const addTodo = async ( todo, user ) => {
+    const query = 'INSERT INTO todos (title, done, user_id) VALUES ($1, $2, $3) RETURNING *';
+    const { rows } = await pool.query( query, [todo.title, todo.done, user.user_id] );
     return rows[0];
 };
 
@@ -85,9 +86,9 @@ const addTodo = async ( todo ) => {
  * @param {String} id Todo id.
  * @returns {Promise<Object>} Deleted todo.
  */
-const removeTodoById = async ( id ) => {
-    const query = 'DELETE FROM todos WHERE id = $1 RETURNING *';
-    const { rows } = await pool.query( query, [id] );
+const removeTodoById = async ( id, user ) => {
+    const query = 'DELETE FROM todos WHERE id = $1 AND user_id = $2 RETURNING *';
+    const { rows } = await pool.query( query, [id, user.user_id] );
     return rows[0];
 };
 
@@ -96,9 +97,9 @@ const removeTodoById = async ( id ) => {
  * @param {String} id Todo id.
  * @returns {Promise<Object>} Updated todo.
  */
-const updateTodoDoneById = async ( id ) => {
-    const query = 'UPDATE todos SET done = NOT done WHERE id = $1 RETURNING *';
-    const { rows } = await pool.query( query, [id] );
+const updateTodoDoneById = async ( id, user ) => {
+    const query = 'UPDATE todos SET done = NOT done WHERE id = $1 AND user_id = $2 RETURNING *';
+    const { rows } = await pool.query( query, [id, user.user_id] );
     return rows[0];
 }
 

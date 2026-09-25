@@ -1,21 +1,21 @@
 import { todoController } from "../controllers/todo.controller.js";
-
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 import { Router } from "express";
 
 const router = Router();
 
 // GET ROUTES
-router.get('/', todoController.read);
+router.get('/', authMiddleware, todoController.read);
 
-router.get('/:id', todoController.readById);
+router.get('/:id', authMiddleware, todoController.readById);
 
 // POST METHOD
-router.post('/', todoController.create);
+router.post('/', authMiddleware, todoController.create);
 
 // PUT METHOD
-router.put('/:id', todoController.update);
+router.put('/:id', authMiddleware, todoController.update);
 
 // DELETE METHOD
-router.delete('/:id', todoController.remove);
+router.delete('/:id', authMiddleware, todoController.remove);
 
 export default router;

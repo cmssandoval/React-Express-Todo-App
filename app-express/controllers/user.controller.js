@@ -1,12 +1,28 @@
+import 'dotenv/config';
+import jwt from 'jsonwebtoken';
 import { getDatabaseError } from "../lib/errors/database.error.js";
 import { userModel } from "../models/user.model.js";
+
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const login = async ( req, res ) => {
     const { email, password } = req.body;
     try {
         
-        await userModel.validateUser({ email, password });
-        return res.status(200).json({message: "User logged successfully" });
+        const user = await userModel.validateUser({ email, password });
+
+        const payload = {
+            email,
+            user_id: user.user_id,
+        };
+
+        const token = jwt.sign( payload, JWT_SECRET );
+
+        return res.status(200).json({
+            message: "User logged successfully",
+            token,
+            email,
+        });
 
     } catch ( error ) {
         console.log( error );
