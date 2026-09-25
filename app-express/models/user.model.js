@@ -23,7 +23,7 @@ const create = async ({ email, password }) => {
 
     } catch (error) {
         console.log(error);
-        
+        throw error;
     }
 };
 
