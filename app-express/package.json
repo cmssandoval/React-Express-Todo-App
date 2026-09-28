@@ -21,9 +21,12 @@
     "pg-format": "^1.0.4"
   },
   "devDependencies": {
+    "jest": "^30.5.2",
     "nodemon": "^3.1.14"
   },
   "allowScripts": {
-    "bcrypt@6.0.0": true
+    "bcrypt@6.0.0": true,
+    "@parcel/watcher@2.6.0": true,
+    "unrs-resolver@1.12.2": true
   }
 }
